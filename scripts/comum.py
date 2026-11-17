@@ -49,6 +49,18 @@ def tem(programa):
     return shutil.which(programa) is not None
 
 
+def ffmpeg_embutido():
+    """Sem ffmpeg no computador, usa o ffmpeg que vem no pacote static-ffmpeg (baixado no instalar)."""
+    if tem("ffmpeg") and tem("ffprobe"):
+        return True
+    try:
+        import static_ffmpeg
+        static_ffmpeg.add_paths(weak=True)
+    except Exception:
+        return False
+    return tem("ffmpeg") and tem("ffprobe")
+
+
 def ytdlp():
     """yt-dlp do ambiente do clipper (sempre atualizado pelo setup) ou o do sistema."""
     local = Path(sys.executable).parent / ("yt-dlp.exe" if os.name == "nt" else "yt-dlp")

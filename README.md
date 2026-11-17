@@ -21,28 +21,37 @@ Você manda o link de uma live (YouTube, Twitch ou Kick), ou pede as maiores liv
 
 Você precisa do **Claude Code** (pode ser com a sua assinatura do Claude ou de graça, com o Ollama).
 
-### Jeito de graça (Ollama)
+### Jeito de graça (Ollama) — precisa de 16 GB de memória ou mais
 
-1. Instale o Ollama: https://ollama.com/download
-2. Instale o Claude Code. No terminal:
-   - Mac: `curl -fsSL https://claude.ai/install.sh | bash`
-   - Windows (PowerShell): `irm https://claude.ai/install.ps1 | iex`
-3. Veja a memória do seu computador (Mac: maçã → Sobre este Mac; Windows: Configurações → Sistema → Sobre).
-   - 16 GB → `qwen3.5:9b`
-   - 32 GB ou mais → `qwen3.5:27b`
-4. No terminal: `ollama launch claude` e escolha o modelo. O Ollama baixa ele sozinho na primeira vez.
+1. Baixe o Ollama em https://ollama.com/download e abra. Clique em **Continue** e depois em
+   **"No thanks, I'll use Ollama locally"** (não precisa de conta).
+2. Abra as **Settings** do Ollama (no Mac: menu Ollama → Settings…) e arraste o **Context length** de 4k para **64k**.
+3. Feche o navegador e os outros programas (a IA usa quase toda a memória).
+4. Abra o terminal (Mac: Command + Espaço → "Terminal"; Windows: Iniciar → "Windows PowerShell") e digite:
+   ```
+   mkdir cortes-gta
+   cd cortes-gta
+   ollama launch claude --model qwen3.5
+   ```
+   Com 32 GB ou mais, use `qwen3.5:27b`. Na primeira vez ele baixa a IA (~7,6 GB): o **Yes** já vem marcado, é só Enter.
+5. Na pergunta "Is this a project you trust?", aperte a **seta pra baixo** até **"Yes, I trust this folder"** e Enter
+   (a opção marcada de início é "No, exit"). Avisos amarelos como "isn't recognized" e "Not logged in" são normais.
 
 ### Com a assinatura do Claude
 
-Só instale o Claude Code (passo 2) e abra com `claude`. As escolhas dos cortes ficam bem melhores.
+Baixe o app em https://claude.com/download (plano Pro ou maior), entre na aba **Code** e escolha uma pasta.
+Sem terminal. Os cortes saem mais rápido e as escolhas ficam bem melhores.
 
 ### Colocando a skill
 
-Baixe esta skill (botão verde **Code → Download ZIP**), descompacte, arraste a pasta pra dentro do Claude Code e fale:
+Cole no Claude Code:
 
-> instala essa skill e monta o clipper do GTA 6
+> instala essa skill e monta o clipper do GTA 6: https://github.com/davixavier-coder/skill-clips
 
-Ele confere o que falta no seu computador (ffmpeg, Python), instala e avisa quando tá pronto.
+Ou baixe esta skill (botão verde **Code → Download ZIP**), descompacte, arraste a pasta pra dentro do Claude Code e
+fale a mesma frase. Quando ele perguntar "Do you want to…", aperte Enter.
+
+Ele confere o que falta no seu computador, instala sozinho (inclusive o ffmpeg) e avisa quando tá pronto.
 
 ## Usando
 
@@ -55,8 +64,8 @@ Os cortes ficam na pasta `clipper-gta6/cortes` da sua pasta de usuário.
 ## Precisa ter
 
 - Mac, Windows ou Linux
-- Python 3.10 ou mais novo (python.org)
-- ffmpeg (o Claude instala pra você)
+- Python 3.10 ou mais novo (se faltar, o Claude te guia)
+- ffmpeg: a skill baixa sozinha
 - uns 2 GB livres pros modelos de escuta, mais o áudio das lives
 
 ## Respeite os streamers

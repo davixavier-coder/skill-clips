@@ -17,11 +17,11 @@ from pathlib import Path
 
 AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI))
-from comum import CASA, CORTES, MODELOS, TRABALHO, YUNET, YUNET_URL, hms, ler_json, pasta_da_live, tem  # noqa: E402
+from comum import CASA, CORTES, MODELOS, TRABALHO, YUNET, YUNET_URL, ffmpeg_embutido, hms, ler_json, pasta_da_live, tem  # noqa: E402
 
 VENV = CASA / "ambiente"
 VENV_PY = VENV / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-PACOTES = ["faster-whisper", "opencv-python-headless", "numpy", "yt-dlp[default]", "certifi"]
+PACOTES = ["faster-whisper", "opencv-python-headless", "numpy", "yt-dlp[default]", "certifi", "static-ffmpeg"]
 
 
 def no_ambiente():
@@ -33,20 +33,14 @@ def no_ambiente():
 def instalar(_):
     print("Conferindo o que o computador precisa…\n")
     falta = []
-    if not (tem("ffmpeg") and tem("ffprobe")):
-        falta.append("ffmpeg")
-        if sys.platform == "darwin":
-            dica = "brew install ffmpeg   (sem Homebrew: https://brew.sh)"
-        elif os.name == "nt":
-            dica = "winget install --id Gyan.FFmpeg -e   (depois feche e abra o terminal)"
-        else:
-            dica = "sudo apt install ffmpeg"
-        print(f"  ✗ ffmpeg não encontrado. Instale com:\n      {dica}")
-    else:
-        print("  ✓ ffmpeg")
     if sys.version_info < (3, 10):
         falta.append("python")
-        print(f"  ✗ Python {sys.version.split()[0]} é antigo. Precisa do 3.10 ou mais novo (python.org).")
+        print(f"  ✗ Python {sys.version.split()[0]} é antigo. Precisa do 3.10 ou mais novo.")
+        if os.name == "nt":
+            print("      Instale com:  winget install -e --id Python.Python.3.12 --scope user"
+                  "   (depois feche e abra o terminal)")
+        else:
+            print("      Baixe o instalador oficial em https://www.python.org/downloads/ e abra o arquivo.")
     else:
         print(f"  ✓ Python {sys.version.split()[0]}")
     if "python" not in falta:
@@ -57,6 +51,17 @@ def instalar(_):
         subprocess.run([str(VENV_PY), "-m", "pip", "install", "-q", "--upgrade", "pip"], check=True)
         subprocess.run([str(VENV_PY), "-m", "pip", "install", "-q", "--upgrade", *PACOTES], check=True)
         print("  ✓ pacotes do Python")
+        if tem("ffmpeg") and tem("ffprobe"):
+            print("  ✓ ffmpeg")
+        else:
+            print("  … baixando o ffmpeg (programa que monta os vídeos, uma vez só)")
+            r = subprocess.run([str(VENV_PY), "-c", "import sys,static_ffmpeg,shutil;static_ffmpeg.add_paths();"
+                                "sys.exit(0 if shutil.which('ffmpeg') and shutil.which('ffprobe') else 1)"])
+            if r.returncode == 0:
+                print("  ✓ ffmpeg")
+            else:
+                falta.append("ffmpeg")
+                print("  ✗ não consegui baixar o ffmpeg. Confira a internet e rode 'clip.py instalar' de novo.")
     if not YUNET.exists():
         print("  … baixando o detector de rosto (OpenCV YuNet, 0,2 MB)")
         MODELOS.mkdir(parents=True, exist_ok=True)
@@ -182,6 +187,8 @@ def main():
     f.set_defaults(f=fazer)
     sub.add_parser("status").set_defaults(f=status)
     a = ap.parse_args()
+    if a.f is not instalar:
+        ffmpeg_embutido()
     a.f(a)
 
 

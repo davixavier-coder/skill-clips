@@ -65,9 +65,29 @@ def ytdlp():
     """yt-dlp do ambiente do clipper (sempre atualizado pelo setup) ou o do sistema."""
     local = Path(sys.executable).parent / ("yt-dlp.exe" if os.name == "nt" else "yt-dlp")
     cmd = [str(local)] if local.exists() else [sys.executable, "-m", "yt_dlp"]
-    if tem("deno") or tem("node"):  # o YouTube precisa de um JavaScript pra liberar todos os formatos
+    # o YouTube está passando a exigir um JavaScript pra liberar os formatos: o instalar põe o Deno no ambiente
+    deno = Path(sys.executable).parent / ("deno.exe" if os.name == "nt" else "deno")
+    if deno.exists():
+        cmd += ["--js-runtimes", f"deno:{deno}"]
+    elif tem("deno") or tem("node"):
         cmd += ["--js-runtimes", "deno" if tem("deno") else "node"]
     return cmd
+
+
+TRANCADA = ("confirm your age", "inappropriate for some users", "members-only", "join this channel",
+            "subscriber", "private video", "requires authentication", "sign in to confirm")
+
+
+def motivo_trancada(erro):
+    """Se o yt-dlp recusou porque a live pede login (idade, membros, inscritos, privada), diz isso em português."""
+    t = (erro or "").lower()
+    if not any(k in t for k in TRANCADA):
+        return None
+    if "age" in t or "inappropriate" in t:
+        return "essa live é trancada por idade (o YouTube pede login pra ver)"
+    if "member" in t or "join this channel" in t or "subscriber" in t:
+        return "essa live é só pra membros/inscritos do canal"
+    return "essa live pede login (privada ou restrita)"
 
 
 def ler_json(caminho, padrao=None):

@@ -42,16 +42,23 @@ Você precisa do **Claude Code** (pode ser com a sua assinatura do Claude ou de 
 Baixe o app em https://claude.com/download (plano Pro ou maior), entre na aba **Code** e escolha uma pasta.
 Sem terminal. Os cortes saem mais rápido e as escolhas ficam bem melhores.
 
-### Colocando a skill
+### Colocando a skill (e atualizando)
 
 Cole no Claude Code:
 
 > instala essa skill e monta o clipper do GTA 6: https://github.com/davixavier-coder/skill-clips
 
-Ou baixe esta skill (botão verde **Code → Download ZIP**), descompacte, arraste a pasta pra dentro do Claude Code e
-fale a mesma frase. Quando ele perguntar "Do you want to…", aperte Enter.
+Se a IA ficar em loop ou der erro, cole o comando direto (serve também pra **atualizar**):
 
-Ele confere o que falta no seu computador, instala sozinho (inclusive o ffmpeg) e avisa quando tá pronto.
+- **Mac:** `curl -fsSL https://raw.githubusercontent.com/davixavier-coder/skill-clips/main/instalar.sh | bash`
+- **Windows (PowerShell):** `irm https://raw.githubusercontent.com/davixavier-coder/skill-clips/main/instalar.ps1 | iex`
+
+Ele baixa a skill, confere o que falta no seu computador, instala sozinho (inclusive o ffmpeg) e avisa quando tá pronto.
+
+### Avisos
+
+- Live trancada por idade ou só pra membros não baixa (é trava do YouTube). O `buscar` já pula essas.
+- No jeito de graça, em computador mais simples, cada corte demora mais. É normal, deixa rodando.
 
 ## Usando
 

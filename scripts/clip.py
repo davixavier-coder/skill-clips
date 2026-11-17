@@ -21,7 +21,7 @@ from comum import CASA, CORTES, MODELOS, TRABALHO, YUNET, YUNET_URL, ffmpeg_embu
 
 VENV = CASA / "ambiente"
 VENV_PY = VENV / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-PACOTES = ["faster-whisper", "opencv-python-headless", "numpy", "yt-dlp[default]", "certifi", "static-ffmpeg"]
+PACOTES = ["faster-whisper", "opencv-python-headless", "numpy", "yt-dlp[default]", "certifi", "static-ffmpeg", "deno"]
 
 
 def no_ambiente():
@@ -109,7 +109,17 @@ def buscar(a):
             if (v.get("id") and (v.get("duration") or 0) >= 30 * 60 and GTA6.search(titulo)
                     and not GTA5.search(titulo)):
                 vistos[v["id"]] = v
-    lista = sorted(vistos.values(), key=lambda v: -(v.get("view_count") or 0))[: a.quantas]
+    lista = []
+    for v in sorted(vistos.values(), key=lambda v: -(v.get("view_count") or 0))[: a.quantas * 3]:
+        if len(lista) >= a.quantas:
+            break
+        # pula live trancada por idade, só pra membros ou privada (não dá pra baixar sem login)
+        r = subprocess.run(ytdlp() + ["--simulate", "--no-warnings", "-q", f"https://www.youtube.com/watch?v={v['id']}"],
+                           capture_output=True, text=True)
+        if r.returncode == 0:
+            lista.append(v)
+        else:
+            print(f"  (pulei '{(v.get('title') or '')[:60]}': trancada ou fora do ar)")
     if not lista:
         print("Não achei lives longas de GTA 6 publicadas hoje. Tente com um link direto.")
         return

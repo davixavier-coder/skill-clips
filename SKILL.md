@@ -23,21 +23,23 @@ Tudo que ele cria fica em `~/clipper-gta6/` (no Windows, `C:\Users\NOME\clipper-
 Os passos de escutar e montar demoram (uma live de 4 horas leva uns minutos pra escutar). Rode esses comandos com
 tempo limite longo (até 60 min) ou em segundo plano, e avise a pessoa que está rodando.
 
-## 0. "Instala essa skill" / "monta o clipper do GTA 6"
+## 0. "Instala essa skill" / "atualiza a skill" / "monta o clipper do GTA 6"
 
-1. Se esta pasta ainda não estiver na pasta de skills, copie a pasta inteira desta skill para
-   `~/.claude/skills/clipper-gta6` (Windows: `%USERPROFILE%\.claude\skills\clipper-gta6`). Crie a pasta `skills` se não existir.
-2. Rode `clip.py instalar`. Ele confere o Python, cria o ambiente, instala os pacotes, baixa sozinho o ffmpeg (se o
-   computador não tiver), o detector de rosto e os modelos de escuta. A pessoa não instala nada na mão.
-3. Só o **Python** pode faltar (precisa do 3.10 ou mais novo; o `python3` que vem no Mac é o 3.9):
-   - Windows: rode `winget install -e --id Python.Python.3.12 --scope user`, peça pra pessoa fechar e abrir o
-     terminal (ou o app do Claude) e continue.
-   - Mac: rode `open https://www.python.org/downloads/` e diga: "Abri o site do Python. Clica no botão amarelo
-     'Download Python', abre o arquivo e vai em Continuar, Concordar e Instalar. Ele pede a senha do teu Mac. Me
-     avisa quando terminar." Depois use o `python3` novo
-     (`/Library/Frameworks/Python.framework/Versions/3.*/bin/python3`).
-4. Rode `clip.py instalar` de novo até aparecer **TUDO PRONTO**. Diga: "Pronto, o clipper tá instalado. É só me
-   mandar o link de uma live ou pedir as maiores lives de GTA 6 de hoje."
+Não tente baixar, ler ou copiar o repositório na mão: rode **um comando só** (ele baixa a skill pra
+`~/.claude/skills/clipper-gta6`, acha o Python e roda o `clip.py instalar`). Use tempo limite longo (até 30 min):
+
+- Mac/Linux: `curl -fsSL https://raw.githubusercontent.com/davixavier-coder/skill-clips/main/instalar.sh | bash`
+- Windows (PowerShell): `irm https://raw.githubusercontent.com/davixavier-coder/skill-clips/main/instalar.ps1 | iex`
+
+O mesmo comando serve pra atualizar. Se terminar com **TUDO PRONTO**, diga: "Pronto, o clipper tá instalado. É só me
+mandar o link de uma live ou pedir as maiores lives de GTA 6 de hoje."
+
+Se disser que falta o **Python** (precisa do 3.10 ou mais novo; o `python3` que vem no Mac é o 3.9):
+- Mac: o comando já abriu o site do Python. Diga: "Abri o site do Python. Clica no botão amarelo 'Download Python',
+  abre o arquivo e vai em Continuar, Concordar e Instalar. Ele pede a senha do teu Mac. Me avisa quando terminar."
+  Depois rode o comando de novo.
+- Windows: o comando já instalou o Python pelo winget. Peça pra pessoa fechar e abrir o terminal (ou o app do Claude)
+  e rode o comando de novo.
 
 ## 1. "Acha as maiores lives de GTA 6 de hoje"
 
@@ -121,7 +123,8 @@ Passe todos os links no mesmo `preparar`, leia os blocos de todas e rode `escolh
 ## Problemas comuns
 - `clip.py status` mostra em que passo cada live está (dá pra continuar de onde parou; nada é refeito).
 - Erro de download: atualize com `clip.py instalar` (ele atualiza o yt-dlp) e tente de novo.
-- Live do YouTube "trancada por idade" ou só pra membros: não dá pra baixar sem login — escolha outra live.
+- "NÃO DÁ PRA BAIXAR: trancada por idade / só pra membros": é trava do site, não do clipper. Diga isso com essas
+  palavras (nunca "o YouTube não deixa baixar") e ofereça outra live: `clip.py buscar` já pula as trancadas.
 - Escolheu um momento ruim: apague-o do `momentos/bloco_NN.json`, rode `escolher` de novo e depois `fazer`.
   Para refazer um corte, apague a pasta `trabalho/NOME/corte_NN/`.
 

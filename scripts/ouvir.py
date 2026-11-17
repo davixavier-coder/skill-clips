@@ -5,21 +5,29 @@ Cada bloco vira um .txt com a fala e duas marcas:
   [CHAT 3.4x]    no replay do YouTube, o chat andou 3,4 vezes mais rápido que o normal
 """
 import json
+import sys
 import time
 import wave
 from pathlib import Path
 
 import numpy as np
 
-from comum import (BLOCO_MIN, TRABALHO, gravar_json, hms, ler_json, rodar, slug, ytdlp)
+from comum import (BLOCO_MIN, TRABALHO, gravar_json, hms, ler_json, motivo_trancada, rodar, slug, ytdlp)
 
 
 # ---------------------------------------------------------------- download
 def baixar(url):
     print(f"\n[1/4] Lendo a live: {url}")
     import subprocess
-    meta = json.loads(subprocess.run(ytdlp() + ["-J", "--no-playlist", "--no-warnings", url],
-                                     check=True, capture_output=True, text=True).stdout)
+    r = subprocess.run(ytdlp() + ["-J", "--no-playlist", "--no-warnings", url], capture_output=True, text=True)
+    if r.returncode != 0:
+        motivo = motivo_trancada(r.stderr)
+        if motivo:
+            sys.exit(f"\n  ✗ NÃO DÁ PRA BAIXAR: {motivo}.\n    Isso é trava do site, não erro do clipper. "
+                     "Escolha outra live (rode 'clip.py buscar', que já pula as trancadas).")
+        print(r.stderr[-1500:])
+        sys.exit("\n  ✗ Não consegui ler essa live. Rode 'clip.py instalar' (atualiza o baixador) e tente de novo.")
+    meta = json.loads(r.stdout)
     nome = slug(f"{meta.get('uploader') or meta.get('channel') or 'live'}-{meta.get('title', '')}")
     pasta = TRABALHO / nome
     pasta.mkdir(parents=True, exist_ok=True)

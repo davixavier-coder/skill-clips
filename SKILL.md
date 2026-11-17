@@ -5,63 +5,58 @@ description: Clipper do GTA 6 — transforma lives longas de streamers (YouTube,
 
 # Clipper do GTA 6
 
-Você (a IA) faz só uma parte do trabalho: **ler a fala da live e escolher os momentos**. Todo o resto — baixar,
-escutar, achar a câmera, montar o vídeo e a legenda — é feito pelos scripts desta pasta, no computador da pessoa.
+Você (a IA) faz só uma parte do trabalho: **ler os trechos quentes da live e escolher os momentos**. Todo o resto
+(baixar, escutar, achar a câmera, montar o vídeo e a legenda) é feito pelos scripts, no computador da pessoa.
 
-Fale com a pessoa em português simples. Ela não é programadora: diga o que está acontecendo em uma frase, sem jargão.
+Fale com a pessoa em português simples, uma frase por vez, sem jargão. Ela não é programadora.
 
-## Como rodar os comandos
+## Regras que evitam travar
 
-O comando é sempre `clip.py`, dentro da pasta `scripts/` desta skill:
-
-- Mac / Linux: `python3 "<pasta da skill>/scripts/clip.py" COMANDO`
-- Windows: `python "<pasta da skill>\scripts\clip.py" COMANDO`
-
-Depois do primeiro `instalar`, o `clip.py` usa sozinho o ambiente próprio dele (`~/clipper-gta6/ambiente`).
-Tudo que ele cria fica em `~/clipper-gta6/` (no Windows, `C:\Users\NOME\clipper-gta6\`).
-
-Os passos de escutar e montar demoram (uma live de 4 horas leva uns minutos pra escutar). Rode esses comandos com
-tempo limite longo (até 60 min) ou em segundo plano, e avise a pessoa que está rodando.
+1. **Sempre o atalho.** Depois de instalado, todo comando é:
+   - Mac / Linux / Git Bash: `~/clipper-gta6/clip COMANDO`
+   - Windows PowerShell: `& "$HOME\clipper-gta6\clip.cmd" COMANDO`
+   Se o atalho não existir, instale (passo 0). Não procure Python, não crie ambiente, não instale pacote na mão.
+2. **"AINDA TRABALHANDO" não é erro.** O trabalho pesado roda sozinho em segundo plano. Diga à pessoa em que
+   ponto está (a porcentagem que apareceu) e rode **o mesmo comando de novo**. Nada recomeça do zero.
+   Se o comando for cortado por tempo, também é só rodar de novo.
+3. **Mensagem com "NÃO DÁ PRA BAIXAR" ou "AINDA ESTÁ AO VIVO"**: repita pra pessoa com essas palavras (é trava do
+   site, não do clipper) e ofereça outra live (`buscar`). Nunca diga "o YouTube não deixa baixar".
+4. Não tente baixar vídeo, ler site ou escrever script por conta própria. Tudo que precisa está nos comandos abaixo.
+5. Se você não conseguir escrever o arquivo de momentos depois de 2 tentativas, use o modo automático:
+   `escolher NOME --auto --manter N` e depois `fazer NOME`.
 
 ## 0. "Instala essa skill" / "atualiza a skill" / "monta o clipper do GTA 6"
 
-Não tente baixar, ler ou copiar o repositório na mão: rode **um comando só** (ele baixa a skill pra
-`~/.claude/skills/clipper-gta6`, acha o Python e roda o `clip.py instalar`). Use tempo limite longo (até 30 min):
+Rode **um comando só** (baixa a skill, arruma o Python sozinho se faltar e instala tudo; pode levar uns minutos):
 
 - Mac/Linux: `curl -fsSL https://raw.githubusercontent.com/davixavier-coder/skill-clips/main/instalar.sh | bash`
 - Windows (PowerShell): `irm https://raw.githubusercontent.com/davixavier-coder/skill-clips/main/instalar.ps1 | iex`
 
-O mesmo comando serve pra atualizar. Se terminar com **TUDO PRONTO**, diga: "Pronto, o clipper tá instalado. É só me
-mandar o link de uma live ou pedir as maiores lives de GTA 6 de hoje."
-
-Se disser que falta o **Python** (precisa do 3.10 ou mais novo; o `python3` que vem no Mac é o 3.9):
-- Mac: o comando já abriu o site do Python. Diga: "Abri o site do Python. Clica no botão amarelo 'Download Python',
-  abre o arquivo e vai em Continuar, Concordar e Instalar. Ele pede a senha do teu Mac. Me avisa quando terminar."
-  Depois rode o comando de novo.
-- Windows: o comando já instalou o Python pelo winget. Peça pra pessoa fechar e abrir o terminal (ou o app do Claude)
-  e rode o comando de novo.
+Quando aparecer **TUDO PRONTO**, diga: "Pronto, o clipper tá instalado. É só me mandar o link de uma live (YouTube,
+Twitch ou Kick) ou pedir as maiores lives de GTA 6 de hoje."
+Se der erro, rode o mesmo comando de novo uma vez. Se repetir, mostre à pessoa a última linha do erro.
 
 ## 1. "Acha as maiores lives de GTA 6 de hoje"
 
-Rode `clip.py buscar` (padrão: 7 lives). Mostre a lista para a pessoa (título, canal, duração, views) e pergunte
-quais cortar — ou corte as 3 primeiras se ela já pediu pra cortar direto.
+`buscar` (padrão: 7 lives, só as que já acabaram e dá pra baixar). Mostre a lista (título, canal, duração, views)
+e pergunte quais cortar, ou corte a primeira se a pessoa já pediu pra cortar direto.
 
-## 2. "Corta essa live" — o fluxo completo
+## 2. "Corta essa live" / "faz 5 cortes dessa live"
 
-Para cada link (YouTube, Twitch ou Kick):
+Número de cortes: o que a pessoa pediu (sem número = 3).
 
 ### 2.1 Preparar
-`clip.py preparar LINK` (aceita vários links de uma vez). Ele baixa só o áudio, escuta tudo, marca os gritos e os
-picos de chat e separa a fala em blocos de 12 minutos em `~/clipper-gta6/trabalho/NOME-DA-LIVE/blocos/`.
+`preparar LINK`. Baixa só o áudio, escuta a live inteira e separa os **trechos mais quentes** (gritos, chat
+acelerado, reações) em `candidatos.txt`. Live longa demora: siga a regra 2 até aparecer **PRONTO PRA ESCOLHER**.
 Se a live não for em português nem em inglês, passe `--idioma` (ex.: `--idioma es`).
 
 ### 2.2 Escolher os momentos (esta é a sua parte)
-Leia **um bloco por vez** (`bloco_01.txt`, `bloco_02.txt`…). Para cada bloco, escreva o arquivo
-`momentos/bloco_NN.json` (mesmo número do bloco), mesmo que vazio (`[]`).
+Leia **só** `~/clipper-gta6/trabalho/NOME/candidatos.txt` (o caminho aparece no fim do `preparar`) e escreva
+`~/clipper-gta6/trabalho/NOME/momentos/candidatos.json`. Escreva uns 2 momentos a mais do que a pessoa pediu.
 
-Cada linha do bloco é `[hh:mm:ss] fala`. As marcas ajudam:
-- `[ALTO +12dB]` — o streamer ficou muito mais alto que o normal ali (grito, surto, susto).
-- `[CHAT 3.1x]` — o chat do YouTube andou 3 vezes mais rápido que o normal: alguma coisa aconteceu.
+Cada linha é `[hh:mm:ss] fala`. As marcas ajudam:
+- `[ALTO +12dB]`: o streamer ficou muito mais alto que o normal ali (grito, surto, susto).
+- `[CHAT 3.1x]`: o chat andou 3 vezes mais rápido que o normal, alguma coisa aconteceu.
 Marca sozinha não é momento. Confirme pela fala.
 
 **O que vale um corte** (o que as pessoas compartilham):
@@ -79,12 +74,12 @@ Marca sozinha não é momento. Confirme pela fala.
 - fala picada ou que a transcrição não deixa entender
 
 **Nota de 0 a 100.** 90+ = qualquer pessoa para de rolar o feed. 70–89 = bom. Abaixo de 60, nem escreva.
-Normalmente um bloco tem de 0 a 3 momentos bons — não invente pra encher.
+Nem todo trecho tem momento bom: não invente pra encher.
 
 **Duração:** de 20 a 60 segundos. Comece 1–2 segundos antes da frase ou do grito que prende (nunca no meio de uma
 palavra) e termine logo depois da reação/conclusão.
 
-Formato de `momentos/bloco_NN.json`:
+Formato de `momentos/candidatos.json`:
 
 ```json
 [
@@ -104,30 +99,35 @@ Formato de `momentos/bloco_NN.json`:
   spoiler do final. Use o nome ou apelido do streamer quando ajudar ("CASIMIRO NÃO ACREDITOU…").
 - `post`: legenda do post, 1–2 frases + 4 a 6 hashtags (sempre `#gta6`).
 
+Se a pessoa quiser os melhores da live INTEIRA (mais lento), leia também os `blocos/bloco_NN.txt` e escreva
+`momentos/bloco_NN.json` no mesmo formato.
+
 ### 2.3 Ficar com os melhores
-`clip.py escolher NOME-DA-LIVE` (padrão: 3 cortes; `--manter 5` pra mais). Ele junta todos os blocos, ordena pela
-nota e tira os que se sobrepõem. Conte pra pessoa: "Achei N momentos possíveis e fiquei com os 3 melhores: …".
+`escolher NOME --manter N` (N = quantos cortes a pessoa pediu). Ele aceita o JSON mesmo com pequenos erros, junta
+tudo, ordena pela nota e tira os que se sobrepõem. Conte: "Achei N momentos e fiquei com os melhores: …".
 
 ### 2.4 Montar os cortes
-`clip.py fazer NOME-DA-LIVE`. Ele baixa só os minutos escolhidos, acha a câmera do streamer (a caixinha com o rosto)
-e monta o vídeo 1080×1920: câmera em cima, jogo embaixo, título de gancho, legenda palavra por palavra. Se não achar
-câmera, usa o jogo inteiro no meio com fundo desfocado.
+`fazer NOME`. Baixa só os segundos escolhidos, acha a câmera do streamer e monta o vídeo 1080×1920: câmera em cima,
+jogo embaixo, título de gancho, legenda palavra por palavra. Sem câmera, usa o jogo inteiro com fundo desfocado.
+Siga a regra 2 até aparecer **CORTES PRONTOS**.
 
-Saída: `~/clipper-gta6/cortes/NOME-DA-LIVE/corte_01.mp4` + `corte_01.txt` (legenda do post + crédito da live).
-Diga onde estão e que é só postar.
+Saída: `~/clipper-gta6/cortes/NOME/corte_01.mp4` + `corte_01.txt` (legenda do post + crédito da live).
+Diga onde estão e que é só postar. No Mac, abra a pasta pra pessoa: `open ~/clipper-gta6/cortes/NOME`
+(Windows: `explorer "$HOME\clipper-gta6\cortes\NOME"`).
 
-## Várias lives de uma vez
-Passe todos os links no mesmo `preparar`, leia os blocos de todas e rode `escolher` e `fazer` para cada uma.
-7 lives ≈ 21 cortes, um dia inteiro de postagem.
+## Tudo automático (IA com dificuldade ou pessoa com pressa)
+`automatico LINK --quantos N` faz preparar + escolher + fazer sozinho, pelos trechos mais quentes. Os títulos ficam
+mais simples (a frase mais forte do trecho). Siga a regra 2.
+
+## Várias lives
+Rode `preparar` com um link por vez (cada um até ficar PRONTO PRA ESCOLHER), depois escolher e fazer pra cada uma.
 
 ## Problemas comuns
-- `clip.py status` mostra em que passo cada live está (dá pra continuar de onde parou; nada é refeito).
-- Erro de download: atualize com `clip.py instalar` (ele atualiza o yt-dlp) e tente de novo.
-- "NÃO DÁ PRA BAIXAR: trancada por idade / só pra membros": é trava do site, não do clipper. Diga isso com essas
-  palavras (nunca "o YouTube não deixa baixar") e ofereça outra live: `clip.py buscar` já pula as trancadas.
-- Escolheu um momento ruim: apague-o do `momentos/bloco_NN.json`, rode `escolher` de novo e depois `fazer`.
-  Para refazer um corte, apague a pasta `trabalho/NOME/corte_NN/`.
+- `status` mostra em que passo cada live está e o que está rodando agora.
+- Momento ruim: apague-o do `momentos/candidatos.json`, rode `escolher` de novo e `fazer` (só refaz o que mudou).
+- Erro de download que não seja trava do site: `instalar` (atualiza o baixador) e o mesmo comando de novo.
+- Demorando muito: no modo de graça o computador da pessoa faz tudo. Explique isso, é normal em PC mais simples.
 
 ## Respeito aos streamers
 Corte só de streamers que permitem cortes (muitos têm canal oficial de cortes e liberam). O `.txt` de cada corte já
-traz o crédito com o link da live — mantenha na postagem.
+traz o crédito com o link da live: mantenha na postagem.

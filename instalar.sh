@@ -15,12 +15,24 @@ for c in /Library/Frameworks/Python.framework/Versions/3.1[0-9]/bin/python3 pyth
     PY="$c"; break
   fi
 done
+if [ -z "$PY" ] || [ -n "$CLIPPER_FORCAR_UV" ]; then
+  # sem Python bom no computador: baixa um Python só pro clipper (uv, oficial da Astral), sem senha e sem instalador
+  echo "… o computador não tem Python 3.10+: baixando um Python só pro clipper (uma vez só)"
+  UVDIR="$HOME/clipper-gta6/uv"
+  mkdir -p "$UVDIR"
+  (curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR="$UVDIR" UV_NO_MODIFY_PATH=1 INSTALLER_NO_MODIFY_PATH=1 sh >/dev/null 2>&1) || true
+  if [ -x "$UVDIR/uv" ]; then
+    "$UVDIR/uv" python install 3.12 >/dev/null 2>&1 || true
+    PY="$("$UVDIR/uv" python find 3.12 2>/dev/null || true)"
+  fi
+fi
 if [ -z "$PY" ]; then
   echo ""
-  echo "✗ FALTA O PYTHON (3.10 ou mais novo). Abrindo o site oficial…"
+  echo "✗ NÃO CONSEGUI ARRUMAR O PYTHON SOZINHO. Abrindo o site oficial…"
   echo "  Clica em 'Download Python', abre o arquivo e vai em Continuar, Concordar e Instalar."
   echo "  Depois rode este mesmo comando de novo."
   command -v open >/dev/null && open https://www.python.org/downloads/
   exit 1
 fi
+echo "✓ Python: $PY"
 "$PY" "$DEST/scripts/clip.py" instalar

@@ -13,8 +13,8 @@ Você manda o link de uma live (YouTube, Twitch ou Kick), ou pede as maiores liv
 1. **Baixa só o áudio.** Uma live de 4 horas fica com algumas centenas de MB, não um vídeo gigante.
 2. **Escuta a live inteira no seu computador.** Escreve tudo que o streamer fala e marca onde ele ficou alto
    (grito, surto) e, no YouTube, onde o chat acelerou.
-3. **A IA lê 12 minutos por vez e dá nota pra cada momento.** É rigorosa: o que precisa de contexto ou começa
-   com enrolação vai pro lixo.
+3. **Separa os trechos mais quentes e a IA escolhe.** O script acha onde o streamer gritou, o chat acelerou e teve
+   reação; a IA lê só esses trechos (rápido até na IA de graça) e dá nota pra cada momento.
 4. **Monta os cortes.** Baixa só os minutos escolhidos, acha a câmera do streamer sozinha e coloca a legenda.
 
 ## Instalação
@@ -65,15 +65,20 @@ Ele baixa a skill, confere o que falta no seu computador, instala sozinho (inclu
 - "corta essa live: LINK"
 - "acha as maiores lives de GTA 6 de hoje e corta"
 - "faz 5 cortes dessa live: LINK"
+- IA se enrolando? "faz os cortes no modo automático: LINK" (tudo sozinho, títulos mais simples)
+
+Live longa demora pra escutar (no modo de graça, o seu computador faz tudo). O trabalho roda sozinho em segundo
+plano e guarda o progresso: se a IA mostrar "AINDA TRABALHANDO", é só deixar ela continuar.
 
 Os cortes ficam na pasta `clipper-gta6/cortes` da sua pasta de usuário.
 
 ## Precisa ter
 
 - Mac, Windows ou Linux
-- Python 3.10 ou mais novo (se faltar, o Claude te guia)
+- Python 3.10 ou mais novo (se faltar, o instalador baixa um sozinho)
 - ffmpeg: a skill baixa sozinha
 - uns 2 GB livres pros modelos de escuta, mais o áudio das lives
+- a live precisa ter acabado (live ainda ao vivo não dá pra cortar) e não pode ser trancada por idade/membros
 
 ## Respeite os streamers
 

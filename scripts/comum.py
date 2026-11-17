@@ -41,7 +41,6 @@ def segundos(valor):
 
 
 def rodar(cmd, **kw):
-    print("  $", " ".join(str(c) for c in cmd[:6]), "…" if len(cmd) > 6 else "", flush=True)
     return subprocess.run([str(c) for c in cmd], check=True, **kw)
 
 

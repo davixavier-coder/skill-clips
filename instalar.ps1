@@ -19,13 +19,13 @@ foreach ($c in $candidatos) {
   # o python.exe da pasta WindowsApps e so um atalho que abre a Microsoft Store: ignora
   if ($cmd -and $cmd.Source -notlike "*\WindowsApps\*") {
     $pre = $c.pre
-    try { & $c.exe @pre -c "import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)" 2>$null } catch { continue }
+    try { & $c.exe @pre -c "import sys; sys.exit(0 if (3, 10) <= sys.version_info[:2] <= (3, 13) else 1)" 2>$null } catch { continue }
     if ($LASTEXITCODE -eq 0) { $py = $c; break }
   }
 }
 if (-not $py) {
-  # sem Python bom no computador: baixa um Python só pro clipper (uv, oficial da Astral), sem reiniciar o terminal
-  Write-Host "... o computador nao tem Python 3.10+: baixando um Python so pro clipper (uma vez so)"
+  # sem Python 3.10-3.13 no computador (o 3.14+ ainda nao tem os pacotes prontos pro Windows): baixa um Python só pro clipper (uv, oficial da Astral), sem reiniciar o terminal
+  Write-Host "... baixando um Python so pro clipper (uma vez so)"
   $uvdir = Join-Path $HOME "clipper-gta6\uv"
   New-Item -ItemType Directory -Force -Path $uvdir | Out-Null
   $env:UV_INSTALL_DIR = $uvdir; $env:UV_NO_MODIFY_PATH = "1"; $env:INSTALLER_NO_MODIFY_PATH = "1"

@@ -14,6 +14,7 @@ Os passos demorados rodam em segundo plano: se aparecer AINDA TRABALHANDO, é s�
 """
 import argparse
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -47,6 +48,13 @@ def instalar(_):
     else:
         print(f"  ✓ Python {sys.version.split()[0]}")
     if "python" not in falta:
+        if VENV_PY.exists():
+            # ambiente criado com outro Python (ex.: um 3.15 sem pacotes prontos): apaga e refaz com o Python certo
+            r = subprocess.run([str(VENV_PY), "-c", "import sys;print('%d.%d' % sys.version_info[:2])"],
+                               capture_output=True, text=True)
+            if r.stdout.strip() != "%d.%d" % sys.version_info[:2]:
+                print("  … refazendo o ambiente do clipper com o Python", sys.version.split()[0])
+                shutil.rmtree(VENV, ignore_errors=True)
         if not VENV_PY.exists():
             print("  … criando o ambiente do clipper em", VENV)
             subprocess.run([sys.executable, "-m", "venv", str(VENV)], check=True)

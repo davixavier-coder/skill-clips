@@ -8,13 +8,18 @@ $tgz = Join-Path $env:TEMP "skill-clips.tar.gz"
 curl.exe -fsSL "https://github.com/davixavier-coder/skill-clips/archive/refs/heads/main.tar.gz" -o $tgz
 tar.exe -xzf $tgz --strip-components=1 -C $dest
 Write-Host "OK: skill no lugar"
+# daqui pra frente, aviso de programa (stderr) nao pode derrubar a instalacao: no PowerShell 5.1 com "Stop",
+# qualquer texto em stderr vira erro fatal (ex.: o atalho falso python.exe da Microsoft Store)
+$ErrorActionPreference = "Continue"
 
 $py = $null
 $candidatos = @(@{exe = "py"; pre = @("-3")}, @{exe = "python"; pre = @()})
 foreach ($c in $candidatos) {
-  if (Get-Command $c.exe -ErrorAction SilentlyContinue) {
+  $cmd = Get-Command $c.exe -ErrorAction SilentlyContinue
+  # o python.exe da pasta WindowsApps e so um atalho que abre a Microsoft Store: ignora
+  if ($cmd -and $cmd.Source -notlike "*\WindowsApps\*") {
     $pre = $c.pre
-    & $c.exe @pre -c "import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)" 2>$null
+    try { & $c.exe @pre -c "import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)" 2>$null } catch { continue }
     if ($LASTEXITCODE -eq 0) { $py = $c; break }
   }
 }
